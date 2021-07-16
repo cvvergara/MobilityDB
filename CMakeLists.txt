@@ -173,8 +173,6 @@ include_directories("include")
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-find_package(Proj REQUIRED)
-
 
 add_definitions(-Wall -Wextra -std=gnu1x -Wno-unused-parameter)
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -208,12 +206,17 @@ endif ()
 
 find_library(HAS_LWGEOM lwgeom)
 if (HAS_LWGEOM)
-	MESSAGE(STATUS "Found LWGEOM at ${HAS_LWGEOM} - compiling with PostGIS support")
-	if(NOT EXISTS "${PostgreSQL_EXTLIB_DIR}/postgis-2.5.so")
+  # Proj is required by lwgeom
+  find_package(Proj REQUIRED)
+  include_directories(SYSTEM ${PROJ_INCLUDE_DIR})
+  add_definitions(-DPROJ_VERSION_NUMB=${PROJ_VERSION_NUMB})
+
+  MESSAGE(STATUS "Found LWGEOM at ${HAS_LWGEOM} - compiling with PostGIS support")
+  if(NOT EXISTS "${PostgreSQL_EXTLIB_DIR}/postgis-2.5.so")
     message(WARNING "Could not find postgis-2.5.so; only PostGIS 2.5 is currently supported")
-	endif()
+  endif()
 else()
-    message(FATAL_ERROR "Could not find lwgeom; ")
+  message(FATAL_ERROR "Could not find lwgeom; ")
 endif ()
 
 include("test/scripts/test.cmake")
