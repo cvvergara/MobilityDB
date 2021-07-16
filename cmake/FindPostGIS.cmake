@@ -14,7 +14,7 @@
 #  PostGIS_LIBRARY_DIR      - useless for the moment
 
 
-FIND_PATH(PostGIS_EXTENSION_DIR postgis.control
+find_path(PostGIS_EXTENSION_DIR postgis.control
     PATHS "${PostgreSQL_EXTENSION_INSTALLATION}")
 
 find_library(PostGIS_LIBRARY_DIR NAMES postgis-2.2.so
