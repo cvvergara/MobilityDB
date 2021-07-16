@@ -222,6 +222,8 @@ else()
   message(FATAL_ERROR "Could not find lwgeom; ")
 endif ()
 
+find_package(JSON-C REQUIRED)
+
 include("test/scripts/test.cmake")
 include("point/point.cmake")
 include("npoint/npoint.cmake")
