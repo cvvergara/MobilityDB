@@ -171,6 +171,8 @@ include_directories(${PostgreSQL_ACTUAL_INCLUDE_DIR})
 include_directories("include")
 ]]
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 add_definitions(-Wall -Wextra -std=gnu1x -Wno-unused-parameter)
 if (CMAKE_COMPILER_IS_GNUCC)
 	if (WITH_COVERAGE)
