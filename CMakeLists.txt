@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.2)
 
 if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
         message(FATAL_ERROR "In-source builds not allowed.
@@ -228,6 +228,15 @@ include("test/scripts/test.cmake")
 include("point/point.cmake")
 include("npoint/npoint.cmake")
 
+find_package(GSL REQUIRED)
+message(STATUS "GSL_CLBAS_LIBRARY=${GSL_CLBAS_LIBRARY}")
+message(STATUS "GSL_CBLAS_LIBRARY_DEBUG=${GSL_CLBAS_LIBRARY_DEBUG}")
+message(STATUS "GSL_CONFIG_EXECUTABLE=${GSL_CONFIG_EXECUTABLE}")
+message(STATUS "GSL_LIBRARY=${GSL_LIBRARY}")
+message(STATUS "GSL_LIBRARY_DEBUG=${GSL_LIBRARY_DEBUG}")
+target_link_libraries(${CMAKE_PROJECT_NAME} GSL::gsl GSL::gslcblas)
+
+#[[
 find_library(HAS_GSLCBLAS gslcblas)
 find_library(HAS_GSL gsl)
 if (HAS_GSL AND HAS_GSLCBLAS)
@@ -239,6 +248,7 @@ if (HAS_GSL AND HAS_GSLCBLAS)
 else()
     message(FATAL_ERROR "Could not find gsl or gslcblas; ")
 endif ()
+]]
 
 check_symbol_exists(ffsl "string.h" HAS_FFSL)
 if(NOT HAS_FFSL)
