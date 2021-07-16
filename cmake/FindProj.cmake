@@ -20,8 +20,6 @@
 
 # try to use framework on mac
 # want clean framework path, not unix compatibility path
-
-MESSAGE(FATAL_ERROR "Looking for Proj")
 IF (APPLE)
   IF (CMAKE_FIND_FRAMEWORK MATCHES "FIRST"
       OR CMAKE_FRAMEWORK_PATH MATCHES "ONLY"
@@ -59,6 +57,7 @@ IF (PROJ_INCLUDE_DIR AND PROJ_LIBRARY)
 ENDIF (PROJ_INCLUDE_DIR AND PROJ_LIBRARY)
 
 IF (PROJ_FOUND)
+  MESSAGE(FATAL_ERROR "Looking for Proj Found")
    IF (EXISTS ${PROJ_INCLUDE_DIR}/proj.h AND EXISTS ${PROJ_INCLUDE_DIR}/proj_experimental.h)
      FILE(READ ${PROJ_INCLUDE_DIR}/proj.h proj_version)
      STRING(REGEX REPLACE "^.*PROJ_VERSION_MAJOR +([0-9]+).*$" "\\1" PROJ_VERSION_MAJOR "${proj_version}")
@@ -91,6 +90,7 @@ IF (PROJ_FOUND)
    ADD_DEFINITIONS(-DPROJ_VERSION_MAJOR=${PROJ_VERSION_MAJOR})
 
 ELSE (PROJ_FOUND)
+  MESSAGE(FATAL_ERROR "Looking for Proj NOT Found")
 
    IF (PROJ_FIND_REQUIRED)
       MESSAGE(FATAL_ERROR "Could not find Proj")
