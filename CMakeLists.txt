@@ -175,6 +175,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 find_package(Proj REQUIRED)
 
+
 add_definitions(-Wall -Wextra -std=gnu1x -Wno-unused-parameter)
 if (CMAKE_COMPILER_IS_GNUCC)
 	if (WITH_COVERAGE)
