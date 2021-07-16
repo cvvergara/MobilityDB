@@ -90,7 +90,7 @@ enable_testing()
 #-------------------------------------
 # Verify PostgreSQL Version
 #-------------------------------------
-set(PG_MIN_MAJOR_VERSION "9.6")
+set(PG_MIN_MAJOR_VERSION "10")
 set(PG_MAX_MAJOR_VERSION "14")
 
 #---------------------------------------------
@@ -112,7 +112,10 @@ string(SUBSTRING "${POSTGRESQL_VERSION_STRING}" 11 -1 POSTGRESQL_VERSION)
 string(REGEX REPLACE "^([0-9]+)[beta|alpha|rc|devel].*" "\\1.0" POSTGRESQL_VERSION ${POSTGRESQL_VERSION})
 
 #for X.Y.Z -> XY  Y<10
-string(REGEX REPLACE "^([0-9]+)\\.([0-9]+).*" "\\1\\2" PGSQL_VERSION ${POSTGRESQL_VERSION})
+string(REGEX REPLACE "^([0-9]+)\\.([0-9]+).*" "\\10000" PGSQL_VERSION_MAYOR ${POSTGRESQL_VERSION})
+string(REGEX REPLACE "^([0-9]+)\\.([0-9]+).*" "\\2" PGSQL_VERSION_MICRO ${POSTGRESQL_VERSION})
+message("${PGSQL_VERSION_MICRO}" + "${PGSQL_VERSION_MAYOR}")
+math(EXPR PGSQL_VERSION "${PGSQL_VERSION_MICRO}+${PGSQL_VERSION_MAYOR}")
 
 
 if("${POSTGRESQL_VERSION}" VERSION_LESS "${PG_MIN_MAJOR_VERSION}")
