@@ -89,7 +89,3 @@ ENDIF ()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Proj
   REQUIRED_VARS PROJ_INCLUDE_DIR PROJ_LIBRARY PROJ_VERSION_MAJOR)
-
-IF (PROJ_FIND_REQUIRED)
-  MESSAGE(FATAL_ERROR "Could not find Proj")
-ENDIF (PROJ_FIND_REQUIRED)
