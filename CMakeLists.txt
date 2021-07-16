@@ -10,6 +10,8 @@ project(MobilityDB VERSION 1.0)
 set(MOBILITYDB_VERSION 1.0)
 include(CheckSymbolExists)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 set(SRCS
 src/geo_constructors.c
 src/doublen.c
@@ -88,9 +90,52 @@ enable_testing()
 #-------------------------------------
 # Verify PostgreSQL Version
 #-------------------------------------
-set(PG_MIN_MAJOR_VERSION "10")
+set(PG_MIN_MAJOR_VERSION "9.6")
 set(PG_MAX_MAJOR_VERSION "14")
 
+#---------------------------------------------
+#---------------------------------------------
+# PostgreSQL
+#---------------------------------------------
+#---------------------------------------------
+
+find_package(PostgreSQL)
+if(NOT POSTGRESQL_FOUND OR NOT POSTGRESQL_VERSION_STRING)
+  message("HERE")
+  message(FATAL_ERROR "PostgreSQL not found - Please check your PostgreSQL installation.")
+endif()
+
+message(STATUS "POSTGRESQL_VERSION_STRING=${POSTGRESQL_VERSION_STRING}")
+string(SUBSTRING "${POSTGRESQL_VERSION_STRING}" 11 -1 POSTGRESQL_VERSION)
+
+# for XbetaY XalphaY XrcY -> X.Y
+string(REGEX REPLACE "^([0-9]+)[beta|alpha|rc|devel].*" "\\1.0" POSTGRESQL_VERSION ${POSTGRESQL_VERSION})
+
+#for X.Y.Z -> XY  Y<10
+string(REGEX REPLACE "^([0-9]+)\\.([0-9]+).*" "\\1\\2" PGSQL_VERSION ${POSTGRESQL_VERSION})
+
+
+if("${POSTGRESQL_VERSION}" VERSION_LESS "${PG_MIN_MAJOR_VERSION}")
+  message(FATAL_ERROR " PostgreSQL ${PG_MIN_MAJOR_VERSION} or greater is required.")
+endif("${POSTGRESQL_VERSION}" VERSION_LESS "${PG_MIN_MAJOR_VERSION}")
+
+#-------
+include_directories(SYSTEM ${POSTGRESQL_INCLUDE_DIR})
+if(WIN32)
+    include_directories(SYSTEM ${POSTGRESQL_INCLUDE_DIR}/port/win32)
+    if(MSVC)
+        include_directories(SYSTEM ${POSTGRESQL_INCLUDE_DIR}/port/win32_msvc/)
+    endif()
+endif()
+
+# The definitions are not used on the code
+add_definitions(-DMOBDB_PGSQL_VERSION=${PGSQL_VERSION})
+add_definitions(-DMOBDB_PGSQL_VERSION_STR="${POSTGRESQL_VERSION}")
+message(STATUS "PGSQL_VERSION=${PGSQL_VERSION}")
+message(STATUS "POSTGRESQL_VERSION=${POSTGRESQL_VERSION}")
+
+
+#[[
 find_program(PGCONFIG pg_config)
 if (NOT PGCONFIG)
 	message(FATAL_ERROR "Could not find pg_config")
@@ -114,13 +159,17 @@ endif()
 message("Found compatible ${PG_VERSION_STRING}")
 
 
+# The definitions are added but not used on the code
 set(MOBDB_DEFS -DMOBDB_PGSQL_VERSION=${PG_FULL_VERSION} -DMOBDB_PGSQL_VERSION_STR="${PG_VERSION_STRING}")
 add_definitions(${MOBDB_DEFS})
+message(STATUS "PG_VERSION_STRING=${PG_VERSION_STRING}")
+message(STATUS "PG_FULL_VERSION=${PG_FULL_VERSION}")
 
 execute_process(COMMAND ${PGCONFIG} --includedir --includedir-server OUTPUT_VARIABLE PostgreSQL_ACTUAL_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 include_directories(${PostgreSQL_ACTUAL_INCLUDE_DIR})
 include_directories("include")
+]]
 
 add_definitions(-Wall -Wextra -std=gnu1x -Wno-unused-parameter)
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -130,6 +179,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 	endif ()
 endif ()
 
+# TODO is there a reason to optimize with debug?
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
 
 string(TOLOWER ${CMAKE_PROJECT_NAME} LCNAME)
