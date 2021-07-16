@@ -5,7 +5,6 @@ name: Test posgresSQL versions
 # - So many jobs take too much time
 
 on:
-  workflow_dispatch:
   push:
 
 jobs:
