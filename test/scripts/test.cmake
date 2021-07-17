@@ -13,7 +13,7 @@ add_test(
 add_test(
 	NAME create_extension
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-	COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh create_ext ${CMAKE_BINARY_DIR} 
+	COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh create_ext ${CMAKE_BINARY_DIR}
 )
 add_test(
 	NAME load_tables
@@ -23,7 +23,7 @@ add_test(
 add_test(
 	NAME teardown
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-	COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh teardown ${CMAKE_BINARY_DIR} 
+	COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh teardown ${CMAKE_BINARY_DIR}
 )
 
 set_tests_properties(setup PROPERTIES FIXTURES_SETUP DBSETUP)
@@ -46,16 +46,16 @@ foreach(file ${testfiles})
 	get_filename_component(TESTNAME ${file} NAME_WE)
 	set(DOTEST TRUE)
 	if(${TESTNAME} MATCHES "_pg([0-9]+)")
-		if(${PG_MAJOR_VERSION} LESS ${CMAKE_MATCH_1})
+    if(${POSTGRESQL_VERSION} VERSION_LESS ${CMAKE_MATCH_1})
 			message("Disabling test ${TESTNAME}")
 			set(DOTEST FALSE)
 		endif()
 	endif()
 	if(DOTEST)
 		add_test(
-			NAME ${TESTNAME} 
+			NAME ${TESTNAME}
 			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-			COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh run_compare ${CMAKE_BINARY_DIR} ${TESTNAME} ${file} 
+			COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh run_compare ${CMAKE_BINARY_DIR} ${TESTNAME} ${file}
 		)
 		set_tests_properties(${TESTNAME} PROPERTIES FIXTURES_REQUIRED DB)
 		set_tests_properties(${TESTNAME} PROPERTIES RESOURCE_LOCK DBLOCK)
