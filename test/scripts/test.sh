@@ -6,11 +6,17 @@ set -o pipefail
 CMD=$1
 BUILDDIR=$2
 WORKDIR=$BUILDDIR/tmptest
-EXTFILE=$BUILDDIR/*--*.sql
+EXTFILE="$BUILDDIR/*--*.sql"
 SOFILE=$(echo "$BUILDDIR"/lib*.so)
 PSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=0 postgres"
 FAILPSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=1 postgres"
 DBDIR=$WORKDIR/db
+#define an alias to run pg_ctl
+run_ctl () {
+  PGCTL=$(pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@")
+  echo "$PGCTL"
+}
+
 PGCTL="pg_ctl -w -D $DBDIR -l $WORKDIR/log/postgres.log -o -k -o $WORKDIR/lock -o -h -o ''" # -o -c -o enable_seqscan=off -o -c -o enable_bitmapscan=off -o -c -o enable_indexscan=on -o -c -o enable_indexonlyscan=on"
 
 #FIXME: this is cheating
