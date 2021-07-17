@@ -89,7 +89,7 @@ run_compare)
 		$PSQL < "$TESTFILE" 2>&1 | tee "$WORKDIR"/out/"$TESTNAME".out > /dev/null
 	fi
 
-	if [ ! -z "$TEST_GENERATE" ]; then
+	if [ -n "$TEST_GENERATE" ]; then
 		echo "TEST_GENERATE is on; assuming correct output"
 		cat "$WORKDIR"/out/"$TESTNAME".out > $(dirname "$TESTFILE")/../expected/$(basename "$TESTFILE" .sql).out
 		exit 0
