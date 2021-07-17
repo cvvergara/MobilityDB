@@ -16,7 +16,7 @@ DBDIR=$WORKDIR/db
 PG_BIN_DIR=$(pg_config --bindir)
 run_ctl () {
   "$PG_BIN_DIR"/pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@"
-  reeturn $?
+  return $?
 }
 
 PGCTL="$PG_BIN_DIR/pg_ctl -w -D $DBDIR -l $WORKDIR/log/postgres.log -o -k -o $WORKDIR/lock -o -h -o '' "
@@ -30,7 +30,7 @@ case $CMD in
 setup)
 	rm -rf "$WORKDIR"
 	mkdir -p "$WORKDIR"/db "$WORKDIR"/lock "$WORKDIR"/out "$WORKDIR"/log
-	initdb -D "$DBDIR" 2>&1 | tee "$WORKDIR"/log/initdb.log
+	"$PG_BIN_DIR"/initdb -D "$DBDIR" 2>&1 | tee "$WORKDIR"/log/initdb.log
 
 	if [ -n "$POSTGIS" ]; then
 		POSTGIS=$(basename "$POSTGIS" .so)
@@ -43,6 +43,7 @@ setup)
 	echo "force_parallel_mode = off" >> "$WORKDIR"/db/postgresql.conf
 	echo "min_parallel_table_scan_size = 0" >> "$WORKDIR"/db/postgresql.conf
 	echo "min_parallel_index_scan_size = 0" >> "$WORKDIR"/db/postgresql.conf
+
 
 	run_ctl start 2>&1 | tee "$WORKDIR/log/pg_start.log"
 	if [ "$?" != "0" ]; then
