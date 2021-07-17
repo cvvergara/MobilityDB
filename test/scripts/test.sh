@@ -42,7 +42,7 @@ setup)
 	echo "min_parallel_table_scan_size = 0" >> "$WORKDIR"/db/postgresql.conf
 	echo "min_parallel_index_scan_size = 0" >> "$WORKDIR"/db/postgresql.conf
 
-	$PGCTL start 2>&1 | tee "$WORKDIR/log/pg_start.log"
+	"$PGCTL" start 2>&1 | tee "$WORKDIR/log/pg_start.log"
 	if [ "$?" != "0" ]; then
 		sleep 2
 		run_ctl status
