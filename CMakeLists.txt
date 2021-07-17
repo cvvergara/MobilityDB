@@ -13,75 +13,75 @@ include(CheckSymbolExists)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(SRCS
-src/geo_constructors.c
-src/doublen.c
-src/lifting.c
-src/period.c
-src/periodset.c
-src/rangetypes_ext.c
-src/skiplist.c
-src/tbool_boolops.c
-src/tbox.c
-src/tempcache.c
-src/temporal.c
-src/tinstant.c
-src/tinstantset.c
-src/tsequence.c
-src/tsequenceset.c
-src/temporal_aggfuncs.c
-src/temporal_analyze.c
-src/temporal_boxops.c
-src/temporal_compops.c
-src/temporal_gist.c
-src/tnumber_mathfuncs.c
-src/temporal_parser.c
-src/temporal_posops.c
-src/temporal_selfuncs.c
-src/temporal_spgist.c
-src/temporal_tile.c
-src/temporal_util.c
-src/temporal_waggfuncs.c
-src/timeops.c
-src/timestampset.c
-src/time_aggfuncs.c
-src/time_analyze.c
-src/time_gist.c
-src/time_selfuncs.c
-src/time_spgist.c
-src/tnumber_distance.c
-src/tnumber_gist.c
-src/tnumber_selfuncs.c
-src/tnumber_spgist.c
-src/ttext_textfuncs.c
+src/general/geo_constructors.c
+src/general/doublen.c
+src/general/lifting.c
+src/general/period.c
+src/general/periodset.c
+src/general/rangetypes_ext.c
+src/general/skiplist.c
+src/general/tbool_boolops.c
+src/general/tbox.c
+src/general/tempcache.c
+src/general/temporal.c
+src/general/tinstant.c
+src/general/tinstantset.c
+src/general/tsequence.c
+src/general/tsequenceset.c
+src/general/temporal_aggfuncs.c
+src/general/temporal_analyze.c
+src/general/temporal_boxops.c
+src/general/temporal_compops.c
+src/general/temporal_gist.c
+src/general/tnumber_mathfuncs.c
+src/general/temporal_parser.c
+src/general/temporal_posops.c
+src/general/temporal_selfuncs.c
+src/general/temporal_spgist.c
+src/general/temporal_tile.c
+src/general/temporal_util.c
+src/general/temporal_waggfuncs.c
+src/general/timeops.c
+src/general/timestampset.c
+src/general/time_aggfuncs.c
+src/general/time_analyze.c
+src/general/time_gist.c
+src/general/time_selfuncs.c
+src/general/time_spgist.c
+src/general/tnumber_distance.c
+src/general/tnumber_gist.c
+src/general/tnumber_selfuncs.c
+src/general/tnumber_spgist.c
+src/general/ttext_textfuncs.c
 )
 
 set(SQL
-src/sql/00_catalog.in.sql
-src/sql/01_period.in.sql
-src/sql/03_timestampset.in.sql
-src/sql/05_periodset.in.sql
-src/sql/07_rangetypes_ext.in.sql
-src/sql/11_timeops.in.sql
-src/sql/13_time_gist.in.sql
-src/sql/15_time_spgist.in.sql
-src/sql/17_time_aggfuncs.in.sql
-src/sql/19_geo_constructors.in.sql
-src/sql/20_doublen.in.sql
-src/sql/21_tbox.in.sql
-src/sql/22_temporal.in.sql
-src/sql/23_temporal_tile.in.sql
-src/sql/24_tnumber_mathfuncs.in.sql
-src/sql/26_tbool_boolops.in.sql
-src/sql/27_ttext_textfuncs.in.sql
-src/sql/28_temporal_compops.in.sql
-src/sql/32_temporal_boxops.in.sql
-src/sql/34_temporal_posops.in.sql
-src/sql/36_tnumber_distance.in.sql
-src/sql/38_temporal_aggfuncs.in.sql
-src/sql/40_temporal_waggfuncs.in.sql
-src/sql/42_temporal_gist.in.sql
-src/sql/44_temporal_spgist.in.sql
-src/sql/99_tempcache.in.sql
+sql/general/00_catalog.in.sql
+sql/general/01_period.in.sql
+sql/general/03_timestampset.in.sql
+sql/general/05_periodset.in.sql
+sql/general/07_rangetypes_ext.in.sql
+sql/general/11_timeops.in.sql
+sql/general/13_time_gist.in.sql
+sql/general/15_time_spgist.in.sql
+sql/general/17_time_aggfuncs.in.sql
+sql/general/19_geo_constructors.in.sql
+sql/general/20_doublen.in.sql
+sql/general/21_tbox.in.sql
+sql/general/22_temporal.in.sql
+sql/general/23_temporal_tile.in.sql
+sql/general/24_tnumber_mathfuncs.in.sql
+sql/general/26_tbool_boolops.in.sql
+sql/general/27_ttext_textfuncs.in.sql
+sql/general/28_temporal_compops.in.sql
+sql/general/32_temporal_boxops.in.sql
+sql/general/34_temporal_posops.in.sql
+sql/general/36_tnumber_distance.in.sql
+sql/general/38_temporal_aggfuncs.in.sql
+sql/general/40_temporal_waggfuncs.in.sql
+sql/general/42_temporal_gist.in.sql
+sql/general/44_temporal_spgist.in.sql
+sql/general/99_tempcache.in.sql
 )
 
 include(CTest)
@@ -255,6 +255,8 @@ if(NOT HAS_FFSL)
        add_definitions(-D NO_FFSL)
 endif()
 
+add_subdirectory(sql/general)
+#[[
 add_custom_command(
 	OUTPUT ${SQLPP}
 	COMMAND mkdir -p ${CMAKE_BINARY_DIR}/sqlin
@@ -262,12 +264,13 @@ add_custom_command(
 	COMMAND cd ${CMAKE_BINARY_DIR}/sqlin/ && find -type f | sort | xargs cat > ${CMAKE_BINARY_DIR}/${SQLPP}
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	DEPENDS ${SQL})
+]]
 
 add_custom_command(
 	OUTPUT ${SQLOUT}
-	COMMAND "${CMAKE_C_COMPILER}" ${MOBDB_DEFS} -E ${SQLPP} | grep -v '^\#' > ${SQLOUT}
+	COMMAND "${CMAKE_C_COMPILER}" ${MOBDB_DEFS} -E sql/general/${SQLPP} | grep -v '^\#' > ${SQLOUT}
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	DEPENDS ${SQLPP})
+	DEPENDS general_extension_file)
 
 add_custom_command(
 	OUTPUT ${CONTROLOUT}
