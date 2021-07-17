@@ -11,6 +11,7 @@ SOFILE=$(echo "$BUILDDIR"/lib*.so)
 PSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=0 postgres"
 FAILPSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=1 postgres"
 DBDIR=$WORKDIR/db
+
 #define an alias to run pg_ctl
 run_ctl () {
   pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@"
@@ -21,7 +22,7 @@ PGCTL="pg_ctl -w -D $DBDIR -l $WORKDIR/log/postgres.log -o -k -o $WORKDIR/lock -
 
 #FIXME: this is cheating
 PGSODIR=$(pg_config --pkglibdir)
-POSTGIS=$(find "$PGSODIR" -name 'postgis-2.5.so' | head -1)
+POSTGIS=$(find "$PGSODIR" -name 'postgis-*.so' | head -1)
 
 case $CMD in
 setup)
@@ -29,7 +30,7 @@ setup)
 	mkdir -p "$WORKDIR"/db "$WORKDIR"/lock "$WORKDIR"/out "$WORKDIR"/log
 	initdb -D "$DBDIR" 2>&1 | tee "$WORKDIR"/log/initdb.log
 
-	if [ ! -z "$POSTGIS" ]; then
+	if [ -n "$POSTGIS" ]; then
 		POSTGIS=$(basename "$POSTGIS" .so)
 		echo "shared_preload_libraries = '$POSTGIS'" >> "$WORKDIR"/db/postgresql.conf
 	fi
@@ -41,7 +42,7 @@ setup)
 	echo "min_parallel_table_scan_size = 0" >> "$WORKDIR"/db/postgresql.conf
 	echo "min_parallel_index_scan_size = 0" >> "$WORKDIR"/db/postgresql.conf
 
-	$PGCTL start 2>&1 | tee "$WORKDIR"/log/pg_start.log
+	run_ctl start 2>&1 | tee "$WORKDIR"/log/pg_start.log
 	if [ "$?" != "0" ]; then
 		sleep 2
 		run_ctl status
