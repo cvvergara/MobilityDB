@@ -255,8 +255,7 @@ if(NOT HAS_FFSL)
        add_definitions(-D NO_FFSL)
 endif()
 
-add_subdirectory(sql/general)
-#[[
+add_subdirectory(sql)
 add_custom_command(
 	OUTPUT ${SQLPP}
 	COMMAND mkdir -p ${CMAKE_BINARY_DIR}/sqlin
@@ -264,13 +263,13 @@ add_custom_command(
 	COMMAND cd ${CMAKE_BINARY_DIR}/sqlin/ && find -type f | sort | xargs cat > ${CMAKE_BINARY_DIR}/${SQLPP}
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	DEPENDS ${SQL})
-]]
 
 add_custom_command(
 	OUTPUT ${SQLOUT}
-	COMMAND "${CMAKE_C_COMPILER}" ${MOBDB_DEFS} -E sql/general/${SQLPP} | grep -v '^\#' > ${SQLOUT}
+	COMMAND "${CMAKE_C_COMPILER}" ${MOBDB_DEFS} -E ${SQLPP} | grep -v '^\#' > ${SQLOUT}
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	DEPENDS general_extension_file)
+	DEPENDS ${SQLPP})
+#DEPENDS general_extension_file)
 
 add_custom_command(
 	OUTPUT ${CONTROLOUT}
