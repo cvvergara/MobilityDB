@@ -66,5 +66,6 @@ jobs:
 
       - name: Test
         run: |
+          export PATH="/usr/lib/postgresql/$PGMAJOR/bin:$PATH"
           cd build
           make test
