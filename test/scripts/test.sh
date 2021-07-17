@@ -77,7 +77,7 @@ run_compare)
 	TESTNAME=$3
 	TESTFILE=$4
 
-	$PGCTL status || $PGCTL start
+	run_ctl status || run_ctl start
 
 	while ! $PSQL -l; do
 		sleep 1
@@ -111,7 +111,7 @@ run_passfail)
 	TESTNAME=$3
 	TESTFILE=$4
 
-	$PGCTL status || $PGCTL start
+	run_ctl status || run_ctl start
 
 	while ! $PSQL -l; do
 		sleep 1
