@@ -15,16 +15,16 @@ foreach(file ${npoint_testfiles})
 	get_filename_component(TESTNAME ${file} NAME_WE)
 	set(DOTEST TRUE)
 	if(${TESTNAME} MATCHES "_pg([0-9]+)")
-    if(${POSTGRESQL_VERSION} VERSION_LESS ${CMAKE_MATCH_1})
+		if(${PG_MAJOR_VERSION} LESS ${CMAKE_MATCH_1})
 			message("Disabling test ${TESTNAME}")
 			set(DOTEST FALSE)
 		endif()
 	endif()
 	if(DOTEST)
 		add_test(
-			NAME ${TESTNAME}
+			NAME ${TESTNAME} 
 			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-			COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh run_compare ${CMAKE_BINARY_DIR} ${TESTNAME} ${file}
+			COMMAND ${PROJECT_SOURCE_DIR}/test/scripts/test.sh run_compare ${CMAKE_BINARY_DIR} ${TESTNAME} ${file} 
 		)
 		set_tests_properties(${TESTNAME} PROPERTIES FIXTURES_REQUIRED DBNPOINT)
 		set_tests_properties(${TESTNAME} PROPERTIES RESOURCE_LOCK DBLOCK)
