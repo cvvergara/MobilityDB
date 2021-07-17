@@ -13,17 +13,15 @@ FAILPSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=1 postgres"
 DBDIR=$WORKDIR/db
 
 #define an alias to run pg_ctl
-PG_BIN_DIR=$(pg_config --bindir)
 run_ctl () {
-  "$PG_BIN_DIR/pg_ctl" -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@"
+  pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@"
   reeturn $?
 }
 
-PGCTL="$PG_BIN_DIR/pg_ctl -w -D $DBDIR -l $WORKDIR/log/postgres.log -o -k -o $WORKDIR/lock -o -h -o """
-# -o -c -o enable_seqscan=off -o -c -o enable_bitmapscan=off -o -c -o enable_indexscan=on -o -c -o enable_indexonlyscan=on"
+PGCTL="pg_ctl -w -D $DBDIR -l $WORKDIR/log/postgres.log -o -k -o $WORKDIR/lock -o -h -o ''" # -o -c -o enable_seqscan=off -o -c -o enable_bitmapscan=off -o -c -o enable_indexscan=on -o -c -o enable_indexonlyscan=on"
 
 #FIXME: this is cheating
-PGSODIR=$("$PG_BIN_DIR/pg_config" --pkglibdir)
+PGSODIR=$(pg_config --pkglibdir)
 POSTGIS=$(find "$PGSODIR" -name 'postgis-*.so' | head -1)
 
 case $CMD in
@@ -113,7 +111,7 @@ run_passfail)
 	TESTNAME=$3
 	TESTFILE=$4
 
-	run_ctl status || run_ctl start
+	$PGCTL status || $PGCTL start
 
 	while ! $PSQL -l; do
 		sleep 1
