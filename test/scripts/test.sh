@@ -13,8 +13,8 @@ FAILPSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=1 postgres"
 DBDIR=$WORKDIR/db
 #define an alias to run pg_ctl
 run_ctl () {
-  PGCTL=$(pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@")
-  echo "$PGCTL"
+  pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@"
+  reeturn $?
 }
 
 PGCTL="pg_ctl -w -D $DBDIR -l $WORKDIR/log/postgres.log -o -k -o $WORKDIR/lock -o -h -o ''" # -o -c -o enable_seqscan=off -o -c -o enable_bitmapscan=off -o -c -o enable_indexscan=on -o -c -o enable_indexonlyscan=on"
@@ -44,7 +44,7 @@ setup)
 	$PGCTL start 2>&1 | tee "$WORKDIR"/log/pg_start.log
 	if [ "$?" != "0" ]; then
 		sleep 2
-		$PGCTL status
+		run_ctl status
 
 		if [ "$?" != "0" ]; then
 			echo "Failed to start PostgreSQL" >&2
