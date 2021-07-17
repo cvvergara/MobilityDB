@@ -8,12 +8,12 @@ BUILDDIR=$2
 WORKDIR=$BUILDDIR/tmptest
 EXTFILE="$BUILDDIR/*--*.sql"
 SOFILE=$(echo "$BUILDDIR"/lib*.so)
-PSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=0 postgres"
-FAILPSQL="psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=1 postgres"
+PG_BIN_DIR=$(pg_config --bindir)
+PSQL="$PG_BIN_DIR/psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=0 postgres"
+FAILPSQL="$PG_BIN_DIR/psql -h $WORKDIR/lock -e --set ON_ERROR_STOP=1 postgres"
 DBDIR=$WORKDIR/db
 
 #define an alias to run pg_ctl
-PG_BIN_DIR=$(pg_config --bindir)
 run_ctl () {
   "$PG_BIN_DIR"/pg_ctl -w -D "$DBDIR" -l "$WORKDIR/log/postgres.log" -o -k -o "$WORKDIR/lock" -o -h -o "" "$@"
   return $?
@@ -65,7 +65,7 @@ create_ext)
 	if [ -n "$POSTGIS" ]; then
 		echo "CREATE EXTENSION postgis;" | $PSQL 2>&1 1>/dev/null | tee "$WORKDIR"/log/create_ext.log
 	fi
-	sed -e "s|MODULE_PATHNAME|$SOFILE|g" -e "s|@extschema@|public|g" < $EXTFILE | $FAILPSQL 2>&1 1>/dev/null | tee -a "$WORKDIR"/log/create_ext.log
+	echo "CREATE EXTENSION mobilitydb;" | $PSQL 2>&1 1>/dev/null | tee "$WORKDIR"/log/create_ext.log
 
 	exit 0
 	;;
